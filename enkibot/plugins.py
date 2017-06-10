@@ -52,7 +52,7 @@ def getdefinition(message, str):
 
     data = getzlearn(key)
     if type(data) is sqlite3.Row:
-        definition = data[4].encode('ISO-8859-1').strip()
+        definition = data[4].encode('utf-8').strip()
         #replacements
         definition = definition.replace('%n', getusername(message))
         message.send('*%s* == %s' % (key, definition))
@@ -131,7 +131,7 @@ def finddefinition(message, str):
     c = conn.cursor()
     t = (key, )
     c.execute('SELECT k FROM defs WHERE d like ?', t)
-    data = c.fetchall()
+    data = c.fetchall() #FIXME: algunas veces genera UnicodeDecodeError: 'utf8' codec can't decode
     l = len(data)
     message.send('Matched %s keys' % l)
     if l > 0:
@@ -146,7 +146,7 @@ def finddefinition(message, str):
     c = conn.cursor()
     t = (key, )
     c.execute('SELECT k FROM defs WHERE k like ?', t)
-    data = c.fetchall()
+    data = c.fetchall() #FIXME: algunas veces genera UnicodeDecodeError: 'utf8' codec can't decode
     l = len(data)
     message.send('Matched %s keys' % l)
     if l > 0:

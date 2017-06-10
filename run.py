@@ -1,6 +1,6 @@
 import sys
 reload(sys)
-sys.setdefaultencoding("ISO-8859-1")
+sys.setdefaultencoding("utf-8")
 
 from slackbot.bot import Bot
 
