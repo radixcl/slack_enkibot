@@ -52,7 +52,7 @@ def getdefinition(message, str):
 
     data = getzlearn(key)
     if type(data) is sqlite3.Row:
-        definition = data[4].encode('utf-8').strip()
+        definition = data[4].encode('ISO-8859-1').strip()
         #replacements
         definition = definition.replace('%n', getusername(message))
         message.send('*%s* == %s' % (key, definition))
@@ -62,8 +62,6 @@ def getdefinition(message, str):
 
     else:
         message.send('Entry *%s* not found.' % (key))
-
-    #message.reply_webapi('hi!', as_user=False)
 
 @listen_to('\!learn (.*)')
 def learndefinition(message, str):
@@ -123,3 +121,33 @@ def learndefinition(message, str):
 
     delkey(key)
     message.send('Removed *%s*.' % (key))
+
+@listen_to('\!find (.*)')
+def finddefinition(message, str):
+    d = str.split(' ');
+    key = d[0]
+    key = key.replace('*', '%')
+
+    c = conn.cursor()
+    t = (key, )
+    c.execute('SELECT k FROM defs WHERE d like ?', t)
+    data = c.fetchall()
+    l = len(data)
+    message.send('Matched %s keys' % l)
+    if l > 0:
+        message.send( ', '.join(e[0] for e in data) )
+
+@listen_to('\!listkeys (.*)')
+def finddefinition(message, str):
+    d = str.split(' ');
+    key = d[0]
+    key = key.replace('*', '%')
+
+    c = conn.cursor()
+    t = (key, )
+    c.execute('SELECT k FROM defs WHERE k like ?', t)
+    data = c.fetchall()
+    l = len(data)
+    message.send('Matched %s keys' % l)
+    if l > 0:
+        message.send( ', '.join(e[0] for e in data) )
