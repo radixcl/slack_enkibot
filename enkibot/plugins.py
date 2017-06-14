@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
+from slackbot import settings
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
+
 import re
 import time
 
@@ -10,10 +12,6 @@ import sqlite3
 conn = sqlite3.connect('./enkibot/zlearn.db', check_same_thread=False)
 conn.row_factory = sqlite3.Row
 conn.text_factory = str
-
-ADMINS = [
-    'radix'
-]
 
 def getzlearn(definition):
     c = conn.cursor()
@@ -40,7 +38,8 @@ def delkey(key):
     c.execute("DELETE FROM defs WHERE k = ?", t)
     conn.commit()
 
-@listen_to('\?\? (.*)')
+@respond_to('^\?\? (.*)')
+@listen_to('^\?\? (.*)')
 def getdefinition(message, str):
 
     d = str.split(' ');
@@ -67,10 +66,11 @@ def getdefinition(message, str):
     else:
         message.send('Entry *%s* not found.' % (key))
 
-@listen_to('\!learn (.*)')
+@respond_to('^\!learn (.*)')
+@listen_to('^\!learn (.*)')
 def learndefinition(message, str):
     user = getusername(message)
-    if not user in ADMINS:
+    if not user in settings.ADMINS:
         #print "nope"
         return
 
@@ -105,11 +105,11 @@ def learndefinition(message, str):
     newkey(key, defs, '%s(Slack)' % user)
     message.send('Learned *%s*.' % key)
 
-
-@listen_to('\!forget (.*)')
+@respond_to('^\!forget (.*)')
+@listen_to('^\!forget (.*)')
 def learndefinition(message, str):
     user = getusername(message)
-    if not user in ADMINS:
+    if not user in settings.ADMINS:
         #print "nope"
         return
 
@@ -126,7 +126,8 @@ def learndefinition(message, str):
     delkey(key)
     message.send('Removed *%s*.' % (key))
 
-@listen_to('\!find (.*)')
+@respond_to('^\!find (.*)')
+@listen_to('^\!find (.*)')
 def finddefinition(message, str):
     d = str.split(' ');
     key = d[0]
@@ -141,7 +142,8 @@ def finddefinition(message, str):
     if l > 0:
         message.send( ', '.join(e[0].decode('ISO-8859-1').encode('utf8') for e in data) )
 
-@listen_to('\!listkeys (.*)')
+@respond_to('^\!listkeys (.*)')
+@listen_to('^\!listkeys (.*)')
 def finddefinition(message, str):
     d = str.split(' ');
     key = d[0]
