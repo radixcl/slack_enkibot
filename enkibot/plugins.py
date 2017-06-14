@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 import re
@@ -6,7 +9,7 @@ import time
 import sqlite3
 conn = sqlite3.connect('./enkibot/zlearn.db', check_same_thread=False)
 conn.row_factory = sqlite3.Row
-
+conn.text_factory = str
 
 ADMINS = [
     'radix'
@@ -15,7 +18,7 @@ ADMINS = [
 def getzlearn(definition):
     c = conn.cursor()
     t = (definition, )
-    c.execute('SELECT * FROM defs WHERE k=?', t)
+    c.execute('SELECT * FROM defs WHERE UPPER(k)=UPPER(?)', t)
     data = c.fetchone()
     return data
 
@@ -55,6 +58,7 @@ def getdefinition(message, str):
         definition = data[4].encode('utf-8').strip()
         #replacements
         definition = definition.replace('%n', getusername(message))
+        definition = definition.replace('*', '*­')
         message.send('*%s* == %s' % (key, definition))
 
         if verbose == 1:
@@ -131,11 +135,11 @@ def finddefinition(message, str):
     c = conn.cursor()
     t = (key, )
     c.execute('SELECT k FROM defs WHERE d like ?', t)
-    data = c.fetchall() #FIXME: algunas veces genera UnicodeDecodeError: 'utf8' codec can't decode
+    data = c.fetchall()
     l = len(data)
     message.send('Matched %s keys' % l)
     if l > 0:
-        message.send( ', '.join(e[0] for e in data) )
+        message.send( ', '.join(e[0].decode('ISO-8859-1').encode('utf8') for e in data) )
 
 @listen_to('\!listkeys (.*)')
 def finddefinition(message, str):
