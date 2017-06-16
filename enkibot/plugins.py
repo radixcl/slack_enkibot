@@ -8,6 +8,8 @@ from slackbot.bot import listen_to
 import re
 import time
 
+from google import google
+
 import sqlite3
 conn = sqlite3.connect('./enkibot/zlearn.db', check_same_thread=False)
 conn.row_factory = sqlite3.Row
@@ -63,8 +65,8 @@ def getdefinition(message, str):
         if verbose == 1:
             message.send('(author: %s) (%s)' % (data[2], time.ctime(int(data[1]))))
 
-    else:
-        message.send('Entry *%s* not found.' % (key))
+        else:
+            message.send('Entry *%s* not found.' % (key))
 
 @respond_to('^\!learn (.*)')
 @listen_to('^\!learn (.*)')
@@ -152,8 +154,19 @@ def finddefinition(message, str):
     c = conn.cursor()
     t = (key, )
     c.execute('SELECT k FROM defs WHERE k like ?', t)
-    data = c.fetchall() #FIXME: algunas veces genera UnicodeDecodeError: 'utf8' codec can't decode
+    data = c.fetchall()
     l = len(data)
     message.send('Matched %s keys' % l)
     if l > 0:
         message.send( ', '.join(e[0] for e in data) )
+
+@respond_to('^\!google (.*)')
+@listen_to('^\!google (.*)')
+def googlesearch(message, str):
+    #message.send('google %s' % str)
+    res = google.search(str, 1)
+
+    if len(res) < 1:
+        message.send('Google returned no results.')
+    else:
+        message.send('%s' % (res[0].link))
