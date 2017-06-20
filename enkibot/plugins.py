@@ -56,7 +56,7 @@ def getdefinition(message, str):
 
     data = getzlearn(key)
     if type(data) is sqlite3.Row:
-        definition = data[4].encode('utf-8').strip()
+        definition = data[4].decode('ISO-8859-1').encode('utf-8').strip()
         #replacements
         definition = definition.replace('%n', getusername(message))
         definition = definition.replace('*', '*­')
