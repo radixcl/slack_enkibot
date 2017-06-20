@@ -65,8 +65,8 @@ def getdefinition(message, str):
         if verbose == 1:
             message.send('(author: %s) (%s)' % (data[2], time.ctime(int(data[1]))))
 
-        else:
-            message.send('Entry *%s* not found.' % (key))
+    else:
+        message.send('Entry *%s* not found.' % (key))
 
 @respond_to('^\!learn (.*)')
 @listen_to('^\!learn (.*)')
